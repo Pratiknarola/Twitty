@@ -10,12 +10,6 @@ const onEnter = (e) => {
     }
 }
 
-const selectTrend = (e) => {
-    const trendText = e.innerText;
-    document.getElementById("user-search-input").value = trendText;
-    getTwitterData();
-}
-
 const onNextPage = () => {
     if(nextPageData.url){
         getTwitterData(true);
@@ -25,11 +19,9 @@ const onNextPage = () => {
 const getTwitterData = (nextPage=false) => {
     const query = document.getElementById("user-search-input").value;
     if(!query) return;
-    
     const encodedQuery = encodeURIComponent(query);
     const params = `q=${encodedQuery}&result_type=mixed`;
     let fullUrl = `${URL}?${params}`;
-    
     if(nextPage){
         fullUrl = nextPageData.url;
         nextPageData.loading = true;
@@ -50,39 +42,10 @@ const saveNextPage = (metadata) => {
     nextPageData.loading = false;
 }
 
-const buildImages = (mediaList) => {
-    let imagesContent = `<div class="tweet-images-container">`;
-    let imagesExist = false;
-    mediaList.map((media)=>{
-        if(media.type == "photo"){
-            imagesExist = true;
-            imagesContent += `
-                <div class="tweet-image" style="background-image: url(${media.media_url_https})"></div>
-            `
-        }
-    })
-    imagesContent += `</div>`;
-    return (imagesExist ? imagesContent : '');
-}
-
-const buildVideo = (mediaList) => {
-    let videoContent = `<div class="tweet-video-container">`;
-    let videoExists = false;
-    mediaList.map((media)=>{
-        if(media.type == "video" || media.type == 'animated_gif'){
-            videoExists = true;
-            const video = media.video_info.variants.find((video)=>video.content_type == 'video/mp4');
-            const videoOptions = getVideoOptions(media.type);
-            videoContent += `
-            <video ${videoOptions}>
-                <source src="${video.url}" type="video/mp4">
-                HTML5 video error. 
-            </video>
-            `
-        }
-    })
-    videoContent += `</div>`;
-    return (videoExists ? videoContent : '');
+const selectTrend = (e) => {
+    const trendText = e.innerText;
+    document.getElementById("user-search-input").value = trendText;
+    getTwitterData();
 }
 
 const nextPageButtonVisibility = (metadata) => {
@@ -132,7 +95,40 @@ const buildTweets = (tweets, nextPage) => {
     }
 }
 
+const buildImages = (mediaList) => {
+    let imagesContent = `<div class="tweet-images-container">`;
+    let imagesExist = false;
+    mediaList.map((media)=>{
+        if(media.type == "photo"){
+            imagesExist = true;
+            imagesContent += `
+                <div class="tweet-image" style="background-image: url(${media.media_url_https})"></div>
+            `
+        }
+    })
+    imagesContent += `</div>`;
+    return (imagesExist ? imagesContent : '');
+}
 
+const buildVideo = (mediaList) => {
+    let videoContent = `<div class="tweet-video-container">`;
+    let videoExists = false;
+    mediaList.map((media)=>{
+        if(media.type == "video" || media.type == 'animated_gif'){
+            videoExists = true;
+            const video = media.video_info.variants.find((video)=>video.content_type == 'video/mp4');
+            const videoOptions = getVideoOptions(media.type);
+            videoContent += `
+            <video ${videoOptions}>
+                <source src="${video.url}" type="video/mp4">
+                Your browser does not support HTML5 video.
+            </video>
+            `
+        }
+    })
+    videoContent += `</div>`;
+    return (videoExists ? videoContent : '');
+}
 
 const getVideoOptions = (mediaType) => {
     if(mediaType == 'animated_gif'){

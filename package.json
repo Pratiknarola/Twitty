@@ -1,6 +1,6 @@
 {
   "name": "twitty",
-  "version": "1.0.1",
+  "version": "1.0.0",
   "description": "Twitter Clone",
   "main": "index.js",
   "scripts": {
